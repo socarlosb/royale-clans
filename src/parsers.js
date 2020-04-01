@@ -5,9 +5,15 @@ exports.parsePlayerData = (data, clan, warLog) => {
   // check if player is in a clan
   if (clan) {
     const playerClanData = parseMembers([data], warLog, clan.memberList);
-    return playerClanData["members"]
+    const parsedPlayerData = playerClanData["members"]
       .filter(element => element !== undefined)
       .shift();
+
+    return {
+      inClanName: clan.name,
+      inClanTag: clan.tag,
+      ...parsedPlayerData
+    };
   }
 
   return {
@@ -19,6 +25,11 @@ exports.parsePlayerData = (data, clan, warLog) => {
     wins: data.wins,
     losses: data.losses,
     warDayWins: data.warDayWins,
+    challengeCardsWon: player.challengeCardsWon,
+    challengeMaxWins: player.challengeMaxWins,
+    tournamentCardsWon: player.tournamentCardsWon,
+    tournamentBattleCount: player.tournamentBattleCount,
+    currentFavouriteCard: player.currentFavouriteCard.name,
     winRate: Number(((data.wins / (data.wins + data.losses)) * 100).toFixed(0)),
     cards13: Number(
       (calcCardPercentage(data.cards, 13, data.cards.length) * 100).toFixed(0)
@@ -161,6 +172,11 @@ const parseMembers = (players, warsLogs, memberList) => {
       bestTrophies: player.bestTrophies,
       wins: player.wins,
       losses: player.losses,
+      challengeCardsWon: player.challengeCardsWon,
+      challengeMaxWins: player.challengeMaxWins,
+      tournamentCardsWon: player.tournamentCardsWon,
+      tournamentBattleCount: player.tournamentBattleCount,
+      currentFavouriteCard: player.currentFavouriteCard.name,
       warDayWins: player.warDayWins,
       winRate: Number(
         ((player.wins / (player.wins + player.losses)) * 100).toFixed(0)
@@ -204,10 +220,10 @@ const parseMembers = (players, warsLogs, memberList) => {
   return {
     members,
     avg: {
-      warWinRate: (warWinRate / activeMembers).toFixed(0),
-      winRate: (winRate / memberList.length).toFixed(0),
-      cardsEarned: (cardsEarned / activeMembers).toFixed(0),
-      donations: (donations / activeMembers).toFixed(0)
+      warWinRate: (warWinRate / activeMembers || 0).toFixed(0),
+      winRate: (winRate / memberList.length || 0).toFixed(0),
+      cardsEarned: (cardsEarned / activeMembers || 0).toFixed(0),
+      donations: (donations / activeMembers || 0).toFixed(0)
     }
   };
 };
