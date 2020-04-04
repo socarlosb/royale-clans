@@ -3,7 +3,7 @@ const {
   fetchClanData,
   fetchClanWarLogs,
 } = require("./vendor");
-const { parseClanData, parsePlayerData } = require("./parsers");
+const { parsePlayerData } = require("./parsers");
 
 const { addToMemory } = require("./middleware");
 const { getClanData } = require("./helper");

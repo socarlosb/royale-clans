@@ -6,13 +6,13 @@ exports.parsePlayerData = (data, clan, warLog) => {
   if (clan) {
     const playerClanData = parseMembers([data], warLog, clan.memberList);
     const parsedPlayerData = playerClanData["members"]
-      .filter(element => element !== undefined)
+      .filter((element) => element !== undefined)
       .shift();
 
     return {
       inClanName: clan.name,
       inClanTag: clan.tag,
-      ...parsedPlayerData
+      ...parsedPlayerData,
     };
   }
 
@@ -45,7 +45,7 @@ exports.parsePlayerData = (data, clan, warLog) => {
     ),
     cards9: Number(
       (calcCardPercentage(data.cards, 9, data.cards.length) * 100).toFixed(0)
-    )
+    ),
   };
 };
 
@@ -69,15 +69,16 @@ exports.parseClanData = (data, wars, allMembers) => {
     avgWinRate: Number(membersInfo.avg.winRate),
     avgDonations: Number(membersInfo.avg.donations),
     avgCardsEarned: Number(membersInfo.avg.cardsEarned),
-    memberList: membersInfo.members
+    memberList: membersInfo.members,
   };
 };
 
 const parseWarData = (tag, arr) => {
-  return arr.map(item => {
+  if (arr.length === 0) return null;
+  return arr.map((item) => {
     const { standings } = item;
     const stands = standings
-      .filter(element => {
+      .filter((element) => {
         return element.clan.tag === tag;
       })
       .shift();
@@ -89,23 +90,21 @@ const parseWarData = (tag, arr) => {
       participants: stands.clan.participants,
       battlesPlayed: stands.clan.battlesPlayed,
       wins: stands.clan.wins,
-      crowns: stands.clan.crowns
+      crowns: stands.clan.crowns,
     };
   });
 };
 
 const parseMembers = (players, warsLogs, memberList) => {
-  warsLogs.reverse();
-
   let warWinRate = 0;
   let winRate = 0;
   let donations = 0;
   let activeMembers = 0;
   let cardsEarned = 0;
 
-  const members = memberList.map(item => {
+  const members = memberList.map((item) => {
     const player = players
-      .filter(element => {
+      .filter((element) => {
         return element.tag === item.tag;
       })
       .shift();
@@ -119,30 +118,33 @@ const parseMembers = (players, warsLogs, memberList) => {
       wins: 0,
       collectionDayBattlesPlayed: 0,
       numberOfBattles: 0,
-      winStreak: 0
+      winStreak: 0,
     };
 
-    warsLogs.forEach(war => {
-      const { participants } = war;
-      const warMember = participants
-        .filter(element => {
-          return element.tag === player.tag;
-        })
-        .shift();
+    if (warsLogs.length !== 0) {
+      warsLogs.reverse();
+      warsLogs.forEach((war) => {
+        const { participants } = war;
+        const warMember = participants
+          .filter((element) => {
+            return element.tag === player.tag;
+          })
+          .shift();
 
-      if (!warMember) return;
+        if (!warMember) return;
 
-      playerWars.battlesPlayed += warMember.battlesPlayed;
-      playerWars.wins += warMember.wins;
-      playerWars.numberOfBattles += warMember.numberOfBattles;
-      playerWars.cardsEarned += warMember.cardsEarned;
-      playerWars.collectionDayBattlesPlayed +=
-        warMember.collectionDayBattlesPlayed;
-      playerWars.numberOfWars += 1;
-      warMember.wins != 0
-        ? (playerWars.winStreak += warMember.wins)
-        : (playerWars.winStreak = 0);
-    });
+        playerWars.battlesPlayed += warMember.battlesPlayed;
+        playerWars.wins += warMember.wins;
+        playerWars.numberOfBattles += warMember.numberOfBattles;
+        playerWars.cardsEarned += warMember.cardsEarned;
+        playerWars.collectionDayBattlesPlayed +=
+          warMember.collectionDayBattlesPlayed;
+        playerWars.numberOfWars += 1;
+        warMember.wins != 0
+          ? (playerWars.winStreak += warMember.wins)
+          : (playerWars.winStreak = 0);
+      });
+    }
 
     if (playerWars.numberOfBattles !== 0) {
       warWinRate += Number(
@@ -213,7 +215,7 @@ const parseMembers = (players, warsLogs, memberList) => {
       warsCollectionDayBattlesPlayed: playerWars.collectionDayBattlesPlayed,
       warsNumberOfBattles: playerWars.numberOfBattles,
       warsWinStreak: playerWars.winStreak,
-      warsNumberOfWars: playerWars.numberOfWars
+      warsNumberOfWars: playerWars.numberOfWars,
     };
   });
 
@@ -223,8 +225,8 @@ const parseMembers = (players, warsLogs, memberList) => {
       warWinRate: (warWinRate / activeMembers || 0).toFixed(0),
       winRate: (winRate / memberList.length || 0).toFixed(0),
       cardsEarned: (cardsEarned / activeMembers || 0).toFixed(0),
-      donations: (donations / activeMembers || 0).toFixed(0)
-    }
+      donations: (donations / activeMembers || 0).toFixed(0),
+    },
   };
 };
 
