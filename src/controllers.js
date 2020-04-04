@@ -1,26 +1,21 @@
 const {
   fetchPlayerData,
   fetchClanData,
-  fetchClanWarLogs
+  fetchClanWarLogs,
 } = require("./vendor");
 const { parseClanData, parsePlayerData } = require("./parsers");
+
+const { addToMemory } = require("./middleware");
+const { getClanData } = require("./helper");
 
 exports.getOneClanData = async (req, res) => {
   try {
     const { tag } = req.params;
-    const data = await fetchClanData(tag);
-    const warData = await fetchClanWarLogs(tag);
 
-    const members = [];
-    data.memberList
-      ? await Promise.all(
-          data["memberList"].map(async ({ tag }) => {
-            members.push(await fetchPlayerData(tag));
-          })
-        )
-      : null;
+    const parsedData = await getClanData(tag);
 
-    const parsedData = parseClanData(data, warData, members);
+    addToMemory(parsedData);
+
     res.json(parsedData);
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -40,7 +35,6 @@ exports.getOnePlayerData = async (req, res) => {
     }
 
     const parsedData = parsePlayerData(data, clanInfo, clanWarInfo);
-
     res.json(parsedData);
   } catch (error) {
     res.status(500).send({ error: error.message });

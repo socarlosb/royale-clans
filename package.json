@@ -16,7 +16,8 @@
     "date-fns": "2.11.1",
     "dotenv": "8.2.0",
     "express": "4.17.1",
-    "express-rate-limit": "5.1.1"
+    "express-rate-limit": "5.1.1",
+    "lowdb": "1.0.0"
   },
   "devDependencies": {
     "nodemon": "2.0.2"
