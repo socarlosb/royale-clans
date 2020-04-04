@@ -74,7 +74,7 @@ exports.parseClanData = (data, wars, allMembers) => {
 };
 
 const parseWarData = (tag, arr) => {
-  if (arr.length === 0) return null;
+  if (arr.length === 0) return [];
   return arr.map((item) => {
     const { standings } = item;
     const stands = standings
